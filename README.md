@@ -12,4 +12,13 @@ k3d cluster create -a 3
     This creates 3 agents that act as worker nodes.
     ![My cluster](image.png)
 
-    another test
+To deploy rocket I need to deploy mongo db with the following parameters. From rocket chat docs. I don't want to use helm charts for this.
+
+From: https://hub.docker.com/_/rocket.chat
+$ docker run --name db -d mongo:4.0 --smallfiles --replSet rs0 --oplogSize 128
+    Create a deployment with these specs
+    I will be using mongo:6
+    
+$ docker exec -ti db mongo --eval "printjson(rs.initiate())"
+    Create a job that execs into mongo and runs these commands.
+

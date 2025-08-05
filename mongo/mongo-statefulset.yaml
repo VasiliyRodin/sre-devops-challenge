@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo-statefulSet
+  namespace: rocket-chat
+spec:
+  selector:
+    matchLabels:
+      app: rocket-chat-mongo
+  serviceName: mongo-service
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: rocket-chat-mongo
+    spec:
+      containers:
+      - name: rocket-chat-mongo
+        image: mongo:8.0
+        command:
+          - mongod
+          - "--bind_ip_all"
+          - "--replSet"
+          - rs0
+        env:
+        - name: MONGO_INITDB_ROOT_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mongo-secret
+              key: username
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongo-secret
+              key: password
+        ports:
+        - containerPort: 27017
+        volumeMounts:
+        - name: mongo-volume
+          mountPath: /data/db/
+  volumeClaimTemplates:
+  - metadata:
+      name: mongo-volume
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 3Gi
