@@ -22,3 +22,22 @@ $ docker run --name db -d mongo:4.0 --smallfiles --replSet rs0 --oplogSize 128
 $ docker exec -ti db mongo --eval "printjson(rs.initiate())"
     Create a job that execs into mongo and runs these commands.
 
+What I learned:
+    My StatefullSet had the wrong service name because of how I edited the name. With the correct service name I was able ping from each mongo container to the other using the dns 
+    mongo-state-#.mongo-service.rocket-chat.svc.cluster.local
+
+    I learned that i need to manually initialize mongo replicaset with 
+        rs.initiate(
+        {
+            _id: "rs0",
+            version: 1,
+            members: [
+                { _id: 0, host : "mongo-state-0.mongo-service.rocket-chat.svc.cluster.local:27017" },
+                { _id: 1, host : "mongo-state-1.mongo-service.rocket-chat.svc.cluster.local:27017" },
+                { _id: 2, host : "mongo-state-2.mongo-service.rocket-chat.svc.cluster.local:27017" }
+            ]
+        }
+        )
+    This part can be automated in a job after the containers are deployed.
+
+    Rocket-chat url should always point to the "master" mongo (mongo-state-0)

@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rocket-chat-deployment
+  namespace: rocket-chat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rocket-chat
+  template:
+    metadata:
+      labels: 
+        app: rocket-chat
+    spec:
+      containers:
+      - name: rocket-chat
+        image: registry.rocket.chat/rocketchat/rocket.chat:latest
+        ports:
+          - containerPort: 3000
+        env:
+          - name: PORT
+            value: "3000"
+          - name: ROOT_URL
+            value: "http://localhost:3000"
+          - name: MONGO_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: mongo-secret
+                key: username
+          - name: MONGO_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mongo-secret
+                key: password
+          - name: MONGO_URL
+            value: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongo-statefulSet-0.mongo-service.rocket-chat.svc.cluster.local:27017/rocket-db?replicaSet=rs0&authSource=admin
+        resources:
+          requests:
+              memory: "512Mi"
+              cpu: "500m"
+          limits:
+              memory: "1Gi"
+              cpu: "1000m"
