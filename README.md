@@ -53,5 +53,7 @@ The next step is to deploy github actions in k8s.
             PVC should create the pv rather than manual pv creation.
             PV can be created with different users in linux and the app might not have access to it. 
             Can give the pod and container special permissions to allow modifying root created resources
-            
+        I can provide root password with env:
+            GITLAB_ROOT_PASSWORD
+
 
