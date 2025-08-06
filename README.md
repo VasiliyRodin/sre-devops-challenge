@@ -41,3 +41,10 @@ What I learned:
     This part can be automated in a job after the containers are deployed.
 
     Rocket-chat url should always point to the "master" mongo (mongo-state-0)
+
+
+
+The next step is to deploy github actions in k8s.
+    Make a deployment file with their docker hub image.
+    Find out what ports need to be open and if there are other dependencies.
+    
